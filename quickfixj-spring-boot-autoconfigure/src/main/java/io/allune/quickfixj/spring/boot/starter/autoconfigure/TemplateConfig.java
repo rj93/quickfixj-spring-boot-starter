@@ -21,7 +21,7 @@ import quickfix.ValidationSettings;
 
 @Data
 public class TemplateConfig {
-    private boolean doValidation = false;
+    private boolean doValidation = true;
     @NestedConfigurationProperty
     private ValidationSettings validationSettings = new ValidationSettings();
 }
