@@ -32,6 +32,7 @@ import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.ValidationSettings;
 import quickfix.field.ApplVerID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
@@ -222,7 +223,7 @@ public class QuickFixJTemplateTest {
 		assertThat(sent).isTrue();
 		assertMessageSent(expectedSender, expectedTarget);
 		ArgumentCaptor<Message> messageCaptor = ArgumentCaptor.forClass(Message.class);
-		verify(applicationDataDictionary).validate(messageCaptor.capture(), eq(true));
+		verify(applicationDataDictionary).validate(messageCaptor.capture(), eq(true), any(ValidationSettings.class));
 	}
 
 	@Test
@@ -251,7 +252,7 @@ public class QuickFixJTemplateTest {
 		given(sessionLookupHandler.lookupBySessionID(any())).willReturn(session);
 		given(session.getDataDictionaryProvider()).willReturn(dataDictionaryProvider);
 		given(dataDictionaryProvider.getApplicationDataDictionary(any())).willReturn(applicationDataDictionary);
-		willThrow(IncorrectDataFormat.class).given(applicationDataDictionary).validate(any(), eq(true));
+		willThrow(IncorrectDataFormat.class).given(applicationDataDictionary).validate(any(), eq(true), any(ValidationSettings.class));
 
 		// When/Then
 		assertThatExceptionOfType(MessageValidationException.class)
@@ -337,7 +338,7 @@ public class QuickFixJTemplateTest {
 
 		verify(session, never()).getDataDictionaryProvider();
 		verify(dataDictionaryProvider, never()).getApplicationDataDictionary(any());
-		verify(applicationDataDictionary, never()).validate(any());
+		verify(applicationDataDictionary, never()).validate(any(), any(Boolean.class), any(ValidationSettings.class));
 	}
 
 	@Test
@@ -359,7 +360,7 @@ public class QuickFixJTemplateTest {
 
 		verify(session).getDataDictionaryProvider();
 		verify(dataDictionaryProvider).getApplicationDataDictionary(any());
-		verify(applicationDataDictionary).validate(any(), any(Boolean.class));
+		verify(applicationDataDictionary).validate(any(), any(Boolean.class), any(ValidationSettings.class));
 	}
 
 	private void assertSessionID(SessionID expectedSessionID) {

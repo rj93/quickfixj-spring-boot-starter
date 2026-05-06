@@ -15,11 +15,15 @@
  */
 package io.allune.quickfixj.spring.boot.starter.autoconfigure.template;
 
+import io.allune.quickfixj.spring.boot.starter.autoconfigure.QuickFixJBootProperties;
+import io.allune.quickfixj.spring.boot.starter.template.DefaultSessionLookupHandler;
 import io.allune.quickfixj.spring.boot.starter.template.QuickFixJTemplate;
+import io.allune.quickfixj.spring.boot.starter.template.SessionLookupHandler;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import quickfix.Session;
 
@@ -30,7 +34,14 @@ import quickfix.Session;
  */
 @AutoConfiguration
 @ConditionalOnClass(Session.class)
+@EnableConfigurationProperties(QuickFixJBootProperties.class)
 public class QuickFixJTemplateAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	public SessionLookupHandler sessionLookupHandler() {
+		return new DefaultSessionLookupHandler();
+	}
 
 	/**
 	 * Creates a {@link QuickFixJTemplate}
@@ -39,7 +50,7 @@ public class QuickFixJTemplateAutoConfiguration {
 	 */
 	@Bean
 	@ConditionalOnMissingBean
-	public QuickFixJTemplate quickFixJTemplate() {
-		return new QuickFixJTemplate();
+	public QuickFixJTemplate quickFixJTemplate(SessionLookupHandler sessionLookupHandler, QuickFixJBootProperties properties) {
+		return new QuickFixJTemplate(sessionLookupHandler, properties.getTemplate().isDoValidation(), properties.getTemplate().getValidationSettings());
 	}
 }

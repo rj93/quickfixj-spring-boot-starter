@@ -30,6 +30,7 @@ import quickfix.Message;
 import quickfix.MessageUtils;
 import quickfix.Session;
 import quickfix.SessionID;
+import quickfix.ValidationSettings;
 import quickfix.field.ApplVerID;
 import quickfix.field.BeginString;
 import quickfix.field.SenderCompID;
@@ -46,21 +47,33 @@ import static quickfix.SessionID.NOT_SET;
 public class QuickFixJTemplate implements QuickFixJOperations {
 
 	private SessionLookupHandler sessionLookupHandler;
-
 	private boolean doValidation;
+	private ValidationSettings validationSettings;
 
 	public QuickFixJTemplate() {
 		this.sessionLookupHandler = new DefaultSessionLookupHandler();
 		this.doValidation = true;
+		this.validationSettings = new ValidationSettings();
 	}
 
 	public QuickFixJTemplate(SessionLookupHandler sessionLookupHandler) {
 		this.sessionLookupHandler = sessionLookupHandler;
 		this.doValidation = true;
+		this.validationSettings = new ValidationSettings();
+	}
+
+	public QuickFixJTemplate(SessionLookupHandler sessionLookupHandler, boolean doValidation, ValidationSettings validationSettings) {
+		this.sessionLookupHandler = sessionLookupHandler;
+		this.doValidation = doValidation;
+		this.validationSettings = validationSettings;
 	}
 
 	public void setSessionLookupHandler(SessionLookupHandler sessionLookupHandler) {
 		this.sessionLookupHandler = sessionLookupHandler;
+	}
+
+	public void setValidationSettings(ValidationSettings validationSettings) {
+		this.validationSettings = validationSettings;
 	}
 
 	public void setDoValidation(boolean doValidation) {
@@ -140,7 +153,7 @@ public class QuickFixJTemplate implements QuickFixJOperations {
 			try {
 				ApplVerID applVerID = getApplicationVersionID(message, session);
 				DataDictionary applicationDataDictionary = dataDictionaryProvider.getApplicationDataDictionary(applVerID);
-				applicationDataDictionary.validate(message, true);
+				applicationDataDictionary.validate(message, true, validationSettings);
 			} catch (Exception e) {
 				LogUtil.logThrowable(sessionID, "Message failed validation: " + e.getMessage(), e);
 				throw new MessageValidationException("Message failed validation: " + e.getMessage(), e);

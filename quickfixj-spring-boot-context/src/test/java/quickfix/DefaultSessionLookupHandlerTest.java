@@ -37,7 +37,7 @@ public class DefaultSessionLookupHandlerTest {
 		ScreenLogFactory factory = new ScreenLogFactory(settings);
 
 		try (Session expectedSession = new Session(new UnitTestApplication(), new MemoryStoreFactory(),
-				sessionID, new DefaultDataDictionaryProvider(), null, factory,
+				sessionID, new DefaultDataDictionaryProvider(), new ValidationSettings(), null, factory,
 				new DefaultMessageFactory(), 0)) {
 			Session.registerSession(expectedSession);
 
